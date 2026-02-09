@@ -1,0 +1,19 @@
+# Dependências
+node_modules/
+client/node_modules/
+server/node_modules/
+
+# Variáveis de ambiente (Segurança)
+.env
+server/.env
+client/.env.local
+
+# Builds e logs
+dist/
+client/dist/
+npm-debug.log*
+yarn-error.log*
+
+# IDEs e Sistema
+.vscode/
+.DS_Store
