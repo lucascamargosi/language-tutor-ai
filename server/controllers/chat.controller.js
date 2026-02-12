@@ -26,13 +26,6 @@ export async function chatController(req, res) {
     res.setHeader('Content-Type', 'text/plain; charset=utf-8');
     res.setHeader('Transfer-Encoding', 'chunked');
 
-    const messages = [
-      {
-        role: 'user',
-        content: message,
-      },
-    ];
-
     await stremResponse({
       model: process.env.DEFAULT_MODEL,
       messages: contextMessages,
