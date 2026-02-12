@@ -1,4 +1,4 @@
-import { generateResponse } from '../services/ai/ollama.provider.js';
+import { stremResponse } from '../services/ai/ollama.provider.js';
 
 export async function chatController(req, res) {
   try {
@@ -8,6 +8,10 @@ export async function chatController(req, res) {
       return res.status(400).json({ error: 'Message is required' });
     }
 
+    // configuração dos headers para streaming
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+    res.setHeader('Transfer-Encoding', 'chunked');
+
     const messages = [
       {
         role: 'user',
@@ -15,13 +19,17 @@ export async function chatController(req, res) {
       },
     ];
 
-    const reply = await generateResponse({
-      model: process.env.DEFAULT_MODEL, 
+    await stremResponse({
+      model: process.env.DEFAULT_MODEL,
       messages,
+      onToken: (token) => {
+        res.write(token);
+      },
     });
-    res.json({ reply });
+
+    res.end();
   } catch (error) {
     console.log(error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).end();
   }
 }
