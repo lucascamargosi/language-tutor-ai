@@ -1,5 +1,6 @@
 import { stremResponse } from '../services/ai/ollama.provider.js';
 import { buildContext } from '../services/memory/contextManager.js';
+import { buildMessages } from '../services/ai/promptBuilder.js';
 
 export async function chatController(req, res) {
   try {
@@ -10,16 +11,12 @@ export async function chatController(req, res) {
     }
 
     // monta histórico completo
-    const fullConversation = [
-      ...history,
-      {
-        role: 'user',
-        content: message,
-      },
-    ];
+    const fullConversation = buildMessages({
+      history,
+      userMessage: message,
+    });
 
     // aplica sliding window
-
     const contextMessages = buildContext(fullConversation);
 
     // configuração dos headers para streaming
