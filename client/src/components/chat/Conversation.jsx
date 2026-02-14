@@ -1,3 +1,8 @@
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeHighlight from 'rehype-highlight';
+import 'highlight.js/styles/github.css';
+
 import { useChatContext } from '../../context/ChatContext';
 import { useEffect, useRef } from 'react';
 
@@ -22,7 +27,13 @@ export function Conversation() {
     >
       {messages.map((msg, index) => (
         <div key={index} style={{ marginBottom: 8 }}>
-          <strong>{msg.role === 'user' ? 'You' : 'AI'}:</strong> {msg.content}
+          <strong>{msg.role === 'user' ? 'You' : 'AI'}:</strong>
+          <ReactMarkdown
+            remarkPlugins={[remarkGfm]}
+            rehypePlugins={[rehypeHighlight]}
+          >
+            {msg.content}
+          </ReactMarkdown>
         </div>
       ))}
       <div ref={bottomRef} />
