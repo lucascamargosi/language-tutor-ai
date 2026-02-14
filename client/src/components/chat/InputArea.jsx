@@ -10,6 +10,13 @@ export function InputArea() {
     setInput('');
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault(); // impede o 'Enter' de criar nova linha
+      handleSend(); // chama funcao do envio
+    }
+  };
+
   return (
     <div>
       <textarea
@@ -17,6 +24,7 @@ export function InputArea() {
         style={{ width: '100%', marginBottom: 10 }}
         value={input}
         onChange={(e) => setInput(e.target.value)}
+        onKeyDown={handleKeyDown}
         placeholder="Type your message..."
       />
 
