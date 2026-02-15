@@ -44,11 +44,13 @@ Antes de começar, você precisará ter instalado:
 
 
 ## Como rodar
-# Terminal 1: Server
-cd server && npm run dev
+1. **Terminal 1: Server:**
+    ```bash
+    cd server && npm run dev
 
-# Terminal 2: Client
-cd client && npm run dev
+2. **Terminal 2: Client:**
+    ```bash
+    cd client && npm run dev
 
 ## Como Testar
 
