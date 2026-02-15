@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 
 // define o caminho absoluto para o arquivo de perfil para evitar erros de diretório
-const profilePath = path.resolve('memory/user_profile.json');
+const profilePath = path.resolve('services/memory/user_profile.json');
 
 /**
  * Lê o perfil do usuário do sistema de arquivos.
