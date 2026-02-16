@@ -15,8 +15,8 @@ export function Conversation() {
   }, [messages]);
 
   return (
-    <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
-      <div className="max-w-4xl mx-auto">
+    <div className="flex-1 overflow-y-auto p-4 md:p-6 bg-slate-50">
+      <div className="max-w-4xl mx-auto flex flex-col gap-6">
         {messages.map((msg, index) => {
           const isAi = msg.role === 'assistant' || msg.role === 'system';
           if (msg.role === 'system') return null;
@@ -29,7 +29,7 @@ export function Conversation() {
               <div
                 className={`max-w-[85%] md:max-w-[75%] px-4 py-3 rounded-2xl shadow-sm ${
                   isAi
-                    ? 'bg-white text-slate-800 border border-slate-200 rounded-tl-none'
+                    ? 'bg-slate-50 text-slate-800 border border-slate-200 rounded-tl-none'
                     : 'bg-brand-medium text-white rounded-tr-none'
                 }`}
               >
@@ -40,7 +40,7 @@ export function Conversation() {
                 </div>
 
                 <div
-                  className={`prose prose-sm max-w-none break-words ${isAi ? 'prose-slate' : 'prose-invert'}`}
+                  className={`prose max-w-none break-words ${isAi ? 'prose-slate' : 'prose-invert text-white'}`}
                 >
                   <ReactMarkdown
                     remarkPlugins={[remarkGfm]}
