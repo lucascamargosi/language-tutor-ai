@@ -8,7 +8,6 @@ import { useEffect, useRef } from 'react';
 
 export function Conversation() {
   const { messages } = useChatContext();
-
   const bottomRef = useRef(null);
 
   useEffect(() => {
@@ -16,27 +15,46 @@ export function Conversation() {
   }, [messages]);
 
   return (
-    <div
-      style={{
-        border: '1px solid #ccc',
-        padding: 10,
-        height: 400,
-        overflowY: 'auto',
-        marginBottom: 10,
-      }}
-    >
-      {messages.map((msg, index) => (
-        <div key={index} style={{ marginBottom: 8 }}>
-          <strong>{msg.role === 'user' ? 'You' : 'AI'}:</strong>
-          <ReactMarkdown
-            remarkPlugins={[remarkGfm]}
-            rehypePlugins={[rehypeHighlight]}
-          >
-            {msg.content}
-          </ReactMarkdown>
-        </div>
-      ))}
-      <div ref={bottomRef} />
+    <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
+      <div className="max-w-4xl mx-auto">
+        {messages.map((msg, index) => {
+          const isAi = msg.role === 'assistant' || msg.role === 'system';
+          if (msg.role === 'system') return null;
+
+          return (
+            <div
+              key={index}
+              className={`flex ${isAi ? 'justify-start' : 'justify-end'} animate-in fade-in slide-in-from-bottom-2`}
+            >
+              <div
+                className={`max-w-[85%] md:max-w-[75%] px-4 py-3 rounded-2xl shadow-sm ${
+                  isAi
+                    ? 'bg-white text-slate-800 border border-slate-200 rounded-tl-none'
+                    : 'bg-brand-medium text-white rounded-tr-none'
+                }`}
+              >
+                <div
+                  className={`text-[10px] uppercase tracking-widest font-bold mb-1 ${isAi ? 'text-brand-medium opacity-60' : 'text-blue-200'}`}
+                >
+                  {isAi ? 'AI Tutor' : 'You'}
+                </div>
+
+                <div
+                  className={`prose prose-sm max-w-none break-words ${isAi ? 'prose-slate' : 'prose-invert'}`}
+                >
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    rehypePlugins={[rehypeHighlight]}
+                  >
+                    {msg.content}
+                  </ReactMarkdown>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+        <div ref={bottomRef} />
+      </div>
     </div>
   );
 }
