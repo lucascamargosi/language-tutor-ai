@@ -1,5 +1,5 @@
 import { stremResponse } from '../services/ai/ollama.provider.js';
-import { buildContext } from '../services/memory/contextManager.js';
+import { getSmartContext } from '../services/memory/contextManager.js';
 import { buildMessages } from '../services/ai/promptBuilder.js';
 import {
   updateUserProfile,
@@ -9,25 +9,19 @@ import { saveMessage } from '../services/memory/historyService.js';
 
 export async function chatController(req, res) {
   try {
-    const { message, history = [] } = req.body;
+    const { message } = req.body; 
 
     if (!message) {
       return res.status(400).json({ error: 'Message is required' });
     }
 
-    // persistencia (User)
+    // persistencia imediata (User)
     saveMessage('user', message);
 
-    // monta histórico completo
-    const fullConversation = buildMessages({
-      history,
-      userMessage: message,
-    });
+    // obtém o contexto inteligente (Já filtrado por tokens e vindo do SQLite)
+    const contextMessages = getSmartContext(message)
 
-    // aplica sliding window
-    const contextMessages = buildContext(fullConversation);
-
-    // configuração dos headers para streaming
+    // configuração de streaming
     res.setHeader('Content-Type', 'text/plain; charset=utf-8');
     res.setHeader('Transfer-Encoding', 'chunked');
 
@@ -41,10 +35,10 @@ export async function chatController(req, res) {
       },
     });
 
-    // persistencia (AI)
+    // persistência da resposta (AI)
     saveMessage('assistant', fullAiResponse)
 
-    // Usa o message (que veio do req.body) para o teste
+    // Inteligencia Adaptativa (ex. do Present Perfect)
     if (message.toLowerCase().includes('present perfect')) {
       const profile = getUserProfile();
       // Verifica se o erro já não está lá para não duplicar no array
