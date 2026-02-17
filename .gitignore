@@ -17,3 +17,7 @@ yarn-error.log*
 # IDEs e Sistema
 .vscode/
 .DS_Store
+
+# SQLite database
+server/database/tutor.db
+server/database/tutor.db-journal
