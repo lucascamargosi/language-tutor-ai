@@ -7,14 +7,14 @@ const db = new Database(dbPath);
 // tabela de mensagens (historico)
 db.exec(`
     CREATE TABLE IF NOT EXISTS messages (
-        in INTEGER PRIMARY KEY AUTOINCREMENT,
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
         role TEXT NOT NULL,
         content TEXT NOT NULL,
         timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
         )
     `);
 
-    // cria a tabela de perfil para tirar o JSON no futuro
+    // cria a tabela de perfil para retirar o JSON no futuro
 db.exec(`
     CREATE TABLE IF NOT EXISTS user_profile (
         key TEXT PRIMARY KEY,
