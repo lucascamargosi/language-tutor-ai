@@ -1,8 +1,21 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export function useChat() {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const loadHistory = async () => {
+      try {
+        const response = await fetch('http://localhost:3001/api/history');
+        const data = await response.json();
+        setMessages(data);
+      } catch (error) {
+        console.error('Erro ao carregar histórico:', error);
+      }
+    };
+    loadHistory();
+  }, []);
 
   const sendMessage = async (input) => {
     if (!input.trim()) return;
@@ -43,12 +56,12 @@ export function useChat() {
       });
     }
 
-    setLoading(false)
+    setLoading(false);
   };
 
   return {
     messages,
     loading,
-    sendMessage
+    sendMessage,
   };
 }
