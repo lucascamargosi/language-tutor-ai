@@ -7,7 +7,7 @@ export function useChat() {
   useEffect(() => {
     const loadHistory = async () => {
       try {
-        const response = await fetch('http://localhost:3001/api/history');
+        const response = await fetch('/api/history');
         const data = await response.json();
         setMessages(data);
       } catch (error) {
@@ -24,14 +24,13 @@ export function useChat() {
     setMessages((prev) => [...prev, userMessage]);
     setLoading(true);
 
-    const response = await fetch('http://localhost:3001/api/chat', {
+    const response = await fetch('/api/chat', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         message: input,
-        history: messages,
       }),
     });
 
