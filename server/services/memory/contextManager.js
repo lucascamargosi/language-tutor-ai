@@ -27,5 +27,10 @@ export function getSmartContext(userMessage) {
     fullContext.splice(1, 1);
   }
 
+  // confere exatamente quantas mensagens restaram após a 'poda'
+  console.log(
+    `[Sliding Window] Tokens: ${countMessageTokens(fullContext)} | Mensagens no Contexto: ${fullContext.length}`,
+  );
+
   return fullContext;
 }
