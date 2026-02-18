@@ -58,9 +58,21 @@ export function useChat() {
     setLoading(false);
   };
 
+  const clearChat = async () => {
+    try {
+      const response = await fetch('/api/history', { method: 'DELETE' });
+      if (response.ok) {
+        setMessages([]); // limpa a tela
+      }
+    } catch (error) {
+      console.log('Erro ao limpar histórico:', error);
+    }
+  };
+
   return {
     messages,
     loading,
     sendMessage,
+    clearChat,
   };
 }
