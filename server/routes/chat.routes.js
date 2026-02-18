@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { chatController } from '../controllers/chat.controller.js';
 import { getLatestMessages } from '../services/memory/historyService.js';
+import db from '../database/db.js';
 
 const router = Router();
 
@@ -12,6 +13,16 @@ router.get('/history', (req, res) => {
     res.json(history);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch history' });
+  }
+});
+
+// rota para deletar o histórico
+router.delete('/history', (req, res) => {
+  try {
+    db.prepare('DELETE FROM messages').run();
+    res.json({ message: 'History cleared!' });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to clear history' });
   }
 });
 
