@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { chatController } from '../controllers/chat.controller.js';
 import { getLatestMessages } from '../services/memory/historyService.js';
 import db from '../database/db.js';
+import { getUserProfile } from '../services/memory/memoryManager.js';
 
 const router = Router();
 
@@ -25,5 +26,15 @@ router.delete('/history', (req, res) => {
     res.status(500).json({ error: 'Failed to clear history' });
   }
 });
+
+// rota para o perfil do usuário
+router.get('/profile', (req, res) => {
+  try {
+    const profile = getUserProfile()
+    res.json(profile)
+  }catch (error) {
+    res.status(500).json({ error: 'Failed to load profile' })
+  }
+})
 
 export default router;
