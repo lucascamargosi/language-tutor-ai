@@ -1,7 +1,7 @@
 import { useChatContext } from '../../context/ChatContext';
 
 export function ChatHeader() {
-  const { clearChat, messages } = useChatContext();
+  const { clearChat, messages, profile } = useChatContext();
 
   const handleClear = () => {
     if (
@@ -18,12 +18,14 @@ export function ChatHeader() {
       </h1>
 
       <div className="ml-auto flex items-center gap-4">
-        {/* Badge de Nível */}
-        <div className="px-3 py-1 bg-white/10 text-blue-200 rounded-full text-xs font-medium border border-white/20">
-          A2 Level • English
-        </div>
-
-        {/* Botão de Lixeira - Só aparece se houver mensagens */}
+        {/* Badge Dinâmica: Se o profile existir, mostra o nível do usuário */}
+        {profile && (
+          <div className="px-3 py-1 bg-white/10 text-blue-200 rounded-full text-xs font-medium border border-white/20 uppercase">
+            {profile.level} Level • {profile.preferred_language}
+          </div>
+        )}
+        
+        {/* Botão de Clear Conversation - Só aparece se houver mensagens */}
         {messages.length > 0 && (
           <button
             onClick={handleClear}
