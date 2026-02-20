@@ -1,10 +1,4 @@
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
 import db from '../../database/db.js';
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const legacyProfilePath = path.join(__dirname, 'user_profile.json');
 
 // garante que existe pelo menos 1 linha de perfil no banco
 function ensureProfileExists() {
@@ -13,36 +7,23 @@ function ensureProfileExists() {
     const result = stmt.get();
 
     if (result.count === 0) {
-      // tenta carregar do JSON legado se existir
-      let initialProfile = {
+      // insere o perfil padrão
+      const defaultProfile = {
         level: 'A1',
         goal: 'Learn English',
         preferred_language: 'english',
         common_mistakes: [],
       };
 
-      try {
-        if (fs.existsSync(legacyProfilePath)) {
-          const data = fs.readFileSync(legacyProfilePath, 'utf-8');
-          const legacy = JSON.parse(data);
-          initialProfile = { ...initialProfile, ...legacy };
-        }
-      } catch (error) {
-        console.log(
-          'Fallback: usando perfil padrão (JSON legado não encontrado ou inválido)',
-        );
-      }
-
-      // insere o perfil inicial
       const insert = db.prepare(`
         INSERT INTO user_profile (id, level, goal, preferred_language, common_mistakes, last_updated)
         VALUES (1, ?, ?, ?, ?, datetime('now'))
       `);
       insert.run(
-        initialProfile.level,
-        initialProfile.goal,
-        initialProfile.preferred_language,
-        JSON.stringify(initialProfile.common_mistakes || []),
+        defaultProfile.level,
+        defaultProfile.goal,
+        defaultProfile.preferred_language,
+        JSON.stringify(defaultProfile.common_mistakes),
       );
     }
   } catch (error) {
