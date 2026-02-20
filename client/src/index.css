@@ -1,5 +1,4 @@
 @import 'tailwindcss';
-@plugin "@tailwindcss/typography";
 
 @theme {
   --color-brand-dark: #051b32;
@@ -9,4 +8,19 @@
 
 body {
   @apply bg-slate-50 text-slate-900;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Estilos para scroll suave */
+* {
+  scroll-behavior: smooth;
+}
+
+/* Estilos para código inline em mensagens do usuário */
+.prose-invert code:not(pre code) {
+  @apply bg-blue-800/40 text-blue-100;
 }
