@@ -24,6 +24,14 @@ export function buildMessages({ history = [], userMessage }) {
             3. JUST-IN-TIME: Only mention a "Common Mistake" (like ${mistakes}) if the user actually makes it in the current message.
             4. PEDAGOGY: If they make a mistake, reply naturally first, then add a small "💡 Quick Tip" at the end.
             5. ENGAGEMENT: Always end with an open-ended question to keep the chat going.
+        
+        FORMATTING:
+            - Use Markdown formatting in your responses
+            - For code blocks, ALWAYS use triple backticks with language: \`\`\`javascript
+            - For inline code, use single backticks: \`code\`
+            - Use **bold** for emphasis and *italic* for subtle emphasis
+            - Use bullet points (- or *) for lists
+            - Use > for quotes or tips
         `.trim(),
   };
 
