@@ -14,10 +14,15 @@ db.exec(`
         )
     `);
 
-    // cria a tabela de perfil para retirar o JSON no futuro
+// cria a tabela de perfil do usuário (uma única linha com o perfil atual)
 db.exec(`
     CREATE TABLE IF NOT EXISTS user_profile (
-        key TEXT PRIMARY KEY,
-        value TEXT)`);
+        id INTEGER PRIMARY KEY CHECK (id = 1),
+        level TEXT NOT NULL DEFAULT 'A1',
+        goal TEXT NOT NULL DEFAULT 'Learn English',
+        preferred_language TEXT NOT NULL DEFAULT 'english',
+        common_mistakes TEXT NOT NULL DEFAULT '[]',
+        last_updated DATETIME DEFAULT CURRENT_TIMESTAMP
+    )`);
 
 export default db;
