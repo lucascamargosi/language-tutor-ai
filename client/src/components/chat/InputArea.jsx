@@ -20,6 +20,8 @@ export function InputArea() {
   return (
     <div className="flex items-end gap-3">
       <textarea
+        id="chat-message"
+        name="chat-message"
         rows={1}
         className="flex-1 min-h-[48px] max-h-32 resize-none rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 text-slate-700 focus:border-brand-medium focus:ring-2 focus:ring-brand-medium/10 focus:outline-none transition-all"
         value={input}
