@@ -1,4 +1,4 @@
-import { stremResponse } from '../services/ai/ollama.provider.js';
+import { streamResponse } from '../services/ai/ollama.provider.js';
 import { getSmartContext } from '../services/memory/contextManager.js';
 import { buildMessages } from '../services/ai/promptBuilder.js';
 import {
@@ -26,7 +26,7 @@ export async function chatController(req, res) {
     res.setHeader('Transfer-Encoding', 'chunked');
 
     let fullAiResponse = '';
-    await stremResponse({
+    await streamResponse({
       model: process.env.DEFAULT_MODEL,
       messages: contextMessages,
       onToken: (token) => {
