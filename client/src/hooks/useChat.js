@@ -1,11 +1,17 @@
 import { useState, useEffect, useCallback } from 'react';
 
-export function useChat() {
+const createMessage = (role, content) => ({
+  id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+  role,
+  content,
+});
+
+export function useChat(conversationId, onConversationUpdate) {
   const [messages, setMessages] = useState([]);
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // useCallback para que a funcão no muda a cada renderizacão
+  // useCallback para que a função não muda a cada renderização
   const fetchProfile = useCallback(async () => {
     try {
       const response = await fetch('/api/profile');
@@ -16,35 +22,52 @@ export function useChat() {
     }
   }, []);
 
-  // carregamento inicial unificado em um único Effect limpo
+  // busca histórico da conversa ativa
+  const fetchMessages = useCallback(async () => {
+    if (!conversationId) return;
+
+    try {
+      const response = await fetch(
+        `/api/conversations/${conversationId}/history`,
+      );
+      const data = await response.json();
+      const normalized = (data || []).map((msg) => ({
+        id: msg.id || `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        role: msg.role,
+        content: msg.content,
+      }));
+      setMessages(normalized);
+    } catch (error) {
+      console.log('Error ao carregar histórico:', error);
+    }
+  }, [conversationId]);
+
+  // carregamento inicial
   useEffect(() => {
     const loadInitialData = async () => {
-      await fetchProfile(); // busca o perfil (A2, B2)
-
-      try {
-        const response = await fetch('api/history');
-        const data = await response.json();
-        setMessages(data); // busca mensagens do SQLite
-      } catch (error) {
-        console.log('Error ao carregar histórico:', error);
-      }
+      await fetchProfile();
+      await fetchMessages();
     };
 
     loadInitialData();
-  }, [fetchProfile]); // fetchProfile é uma dependência estável
+  }, [fetchProfile, fetchMessages]);
 
   const sendMessage = async (input) => {
-    if (!input.trim() || loading) return;
+    if (!input.trim() || loading || !conversationId) return;
 
     // adiciona mensagem do usuário na tela
-    setMessages((prev) => [...prev, { role: 'user', content: input }]);
+    const userMessage = createMessage('user', input);
+    setMessages((prev) => [...prev, userMessage]);
     setLoading(true);
 
     try {
-      const response = await fetch('api/chat', {
+      const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: input }),
+        body: JSON.stringify({
+          message: input,
+          conversationId,
+        }),
       });
 
       if (!response.ok) {
@@ -55,7 +78,8 @@ export function useChat() {
       const decoder = new TextDecoder('utf-8');
 
       // inicializa a bolha da IA vazia
-      setMessages((prev) => [...prev, { role: 'assistant', content: '' }]);
+      const assistantMessage = createMessage('assistant', '');
+      setMessages((prev) => [...prev, assistantMessage]);
 
       let accumulatedContent = '';
 
@@ -67,24 +91,26 @@ export function useChat() {
         accumulatedContent += chunk;
 
         // atualiza a última mensagem (da IA) com o novo conteúdo acumulado
-        setMessages((prev) => {
-          const updated = [...prev];
-          const lastIndex = updated.length - 1;
-          updated[lastIndex] = {
-            ...updated[lastIndex],
-            content: accumulatedContent,
-          };
-          return updated;
-        });
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === assistantMessage.id
+              ? { ...msg, content: accumulatedContent }
+              : msg,
+          ),
+        );
       }
 
       // atualiza o perfil após a resposta da IA chegar
-      // (detecta erros comuns que foram adicionados ao perfil)
       await fetchProfile();
+
+      // notifica que a conversa foi atualizada (para atualizar título se necessário)
+      if (onConversationUpdate) {
+        onConversationUpdate();
+      }
     } catch (error) {
       console.error('Erro ao enviar mensagem:', error);
       // remove a última mensagem do usuário se houver erro
-      setMessages((prev) => prev.slice(0, -1));
+      setMessages((prev) => prev.filter((msg) => msg.id !== userMessage.id));
     } finally {
       setLoading(false);
     }
@@ -94,7 +120,12 @@ export function useChat() {
     if (!window.confirm('Apagar histórico?')) return;
 
     try {
-      const response = await fetch('/api/history', { method: 'DELETE' });
+      const response = await fetch(
+        `/api/conversations/${conversationId}/history`,
+        {
+          method: 'DELETE',
+        },
+      );
       if (response.ok) setMessages([]); // limpa a tela
     } catch (error) {
       console.log('Erro ao limpar histórico:', error);
