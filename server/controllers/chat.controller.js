@@ -5,22 +5,36 @@ import {
   updateUserProfile,
   getUserProfile,
 } from '../services/memory/memoryManager.js';
-import { saveMessage } from '../services/memory/historyService.js';
+import {
+  saveMessage,
+  getLatestMessages,
+  generateConversationTitle,
+  renameConversation,
+  countMessagesInConversation,
+} from '../services/memory/historyService.js';
 import { detectErrorPatterns } from '../services/memory/errorPatterns.js';
 
 export async function chatController(req, res) {
   try {
-    const { message } = req.body;
+    const { message, conversationId } = req.body;
 
     if (!message) {
       return res.status(400).json({ error: 'Message is required' });
     }
 
     // persistencia imediata (User)
-    saveMessage('user', message);
+    saveMessage('user', message, conversationId);
+
+    // se for a primeira mensagem do usuário (contando só mensagens 'user'), gera título automaticamente
+    const messageCount = countMessagesInConversation(conversationId);
+    if (messageCount === 1) {
+      // é a primeira mensagem (acabamos de salvar)
+      const autoTitle = generateConversationTitle(message);
+      renameConversation(conversationId, autoTitle);
+    }
 
     // obtém o contexto inteligente (Já filtrado por tokens e vindo do SQLite)
-    const contextMessages = getSmartContext(message);
+    const contextMessages = getSmartContext(message, conversationId);
 
     // configuração de streaming
     res.setHeader('Content-Type', 'text/plain; charset=utf-8');
@@ -37,7 +51,7 @@ export async function chatController(req, res) {
     });
 
     // persistência da resposta (AI)
-    saveMessage('assistant', fullAiResponse);
+    saveMessage('assistant', fullAiResponse, conversationId);
 
     // Inteligencia Adaptativa: detecta erros comuns e atualiza perfil
     const detectedErrors = detectErrorPatterns(message);

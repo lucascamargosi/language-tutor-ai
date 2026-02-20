@@ -5,12 +5,12 @@ import { buildMessages } from '../ai/promptBuilder.js';
 const CONTEXT_LIMIT = parseInt(process.env.CONTEXT_LIMIT || '6000');
 const RESERVED_FOR_OUTPUT = 1000;
 
-export function getSmartContext(userMessage) {
+export function getSmartContext(userMessage, conversationId = null) {
   const maxInputTokens = CONTEXT_LIMIT - RESERVED_FOR_OUTPUT;
 
-  // busca últimas 30 mensagens o histórico
+  // busca últimas 30 mensagens do histórico
   // Nota: não busca a mensagem atual, pois o buildMessages vai adicioná-la
-  const rawHistory = getLatestMessages(30);
+  const rawHistory = getLatestMessages(30, conversationId);
 
   // monta o prompt completo (System + History + UserMessage)
   let fullContext = buildMessages({
