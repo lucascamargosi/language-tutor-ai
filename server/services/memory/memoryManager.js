@@ -1,8 +1,9 @@
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
-// define o caminho absoluto para o arquivo de perfil para evitar erros de diretório
-const profilePath = path.resolve('services/memory/user_profile.json');
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const profilePath = path.join(__dirname, 'user_profile.json');
 
 /**
  * Lê o perfil do usuário do sistema de arquivos.
@@ -14,7 +15,14 @@ export function getUserProfile() {
     return JSON.parse(data);
   } catch (error) {
     console.error('Error reading profile', error);
-    return null;
+    // retorna um perfil padrão se não existir
+    return {
+      level: 'A1',
+      goal: 'Learn English',
+      preferred_language: 'english',
+      common_mistakes: [],
+      last_updated: new Date().toISOString(),
+    };
   }
 }
 
