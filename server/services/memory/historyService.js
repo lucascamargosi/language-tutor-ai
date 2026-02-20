@@ -67,3 +67,93 @@ export function deleteConversationMessages(conversationId) {
   }
 }
 
+// lista todas as conversas
+export function getAllConversations() {
+  try {
+    const stmt = db.prepare(
+      'SELECT id, title, created_at, updated_at FROM conversations ORDER BY updated_at DESC',
+    );
+    return stmt.all();
+  } catch (error) {
+    console.error('Erro ao listar conversas:', error);
+    return [];
+  }
+}
+
+// cria nova conversa
+export function createConversation(title) {
+  try {
+    console.log(
+      '[DB] Tentando criar conversa com título:',
+      title || 'New Chat',
+    );
+
+    const insert = db.prepare('INSERT INTO conversations (title) VALUES (?)');
+    const result = insert.run(title || 'New Chat');
+
+    console.log('[DB] Result lastInsertRowid:', result.lastInsertRowid);
+
+    if (!result.lastInsertRowid) {
+      console.error('[DB Error] lastInsertRowid é null/undefined');
+      return null;
+    }
+
+    const newConversation = {
+      id: result.lastInsertRowid,
+      title: title || 'New Chat',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+
+    console.log('[DB Success] Conversa criada:', newConversation);
+    return newConversation;
+  } catch (error) {
+    console.error('[DB Error] Erro ao criar conversa:', error);
+    return null;
+  }
+}
+
+// renomeia uma conversa
+export function renameConversation(conversationId, newTitle) {
+  try {
+    const stmt = db.prepare(
+      'UPDATE conversations SET title = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+    );
+    stmt.run(newTitle, conversationId);
+  } catch (error) {
+    console.error('Erro ao renomear conversa:', error);
+  }
+}
+
+// conta quantas mensagens existem em uma conversa
+export function countMessagesInConversation(conversationId) {
+  try {
+    const stmt = db.prepare(
+      'SELECT COUNT(*) as count FROM messages WHERE conversation_id = ?',
+    );
+    const result = stmt.get(conversationId);
+    return result.count;
+  } catch (error) {
+    console.error('Erro ao contar mensagens:', error);
+    return 0;
+  }
+}
+
+// gera título automático com base na primeira mensagem
+export function generateConversationTitle(firstMessage) {
+  // pega as primeiras 5 palavras da mensagem
+  const words = firstMessage.trim().split(/\s+/);
+  const title = words.slice(0, 5).join(' ');
+  return title.length > 40 ? title.substring(0, 40) + '...' : title;
+}
+
+// deleta uma conversa e suas mensagens
+export function deleteConversation(conversationId) {
+  try {
+    deleteConversationMessages(conversationId);
+    const stmt = db.prepare('DELETE FROM conversations WHERE id = ?');
+    stmt.run(conversationId);
+  } catch (error) {
+    console.error('Erro ao deletar conversa:', error);
+  }
+}
