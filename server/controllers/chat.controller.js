@@ -6,10 +6,11 @@ import {
   getUserProfile,
 } from '../services/memory/memoryManager.js';
 import { saveMessage } from '../services/memory/historyService.js';
+import { detectErrorPatterns } from '../services/memory/errorPatterns.js';
 
 export async function chatController(req, res) {
   try {
-    const { message } = req.body; 
+    const { message } = req.body;
 
     if (!message) {
       return res.status(400).json({ error: 'Message is required' });
@@ -19,7 +20,7 @@ export async function chatController(req, res) {
     saveMessage('user', message);
 
     // obtém o contexto inteligente (Já filtrado por tokens e vindo do SQLite)
-    const contextMessages = getSmartContext(message)
+    const contextMessages = getSmartContext(message);
 
     // configuração de streaming
     res.setHeader('Content-Type', 'text/plain; charset=utf-8');
@@ -36,15 +37,29 @@ export async function chatController(req, res) {
     });
 
     // persistência da resposta (AI)
-    saveMessage('assistant', fullAiResponse)
+    saveMessage('assistant', fullAiResponse);
 
-    // Inteligencia Adaptativa (ex. do Present Perfect)
-    if (message.toLowerCase().includes('present perfect')) {
+    // Inteligencia Adaptativa: detecta erros comuns e atualiza perfil
+    const detectedErrors = detectErrorPatterns(message);
+    if (detectedErrors.length > 0) {
       const profile = getUserProfile();
-      // Verifica se o erro já não está lá para não duplicar no array
-      if (profile && !profile.common_mistakes.includes('present perfect')) {
+      const currentMistakes = profile.common_mistakes || [];
+
+      // adiciona novos erros ao perfil (evita duplicação)
+      const newMistakes = currentMistakes;
+      let updated = false;
+
+      for (const error of detectedErrors) {
+        if (!newMistakes.includes(error)) {
+          newMistakes.push(error);
+          updated = true;
+          console.log(`[AI Tutor] Erro detectado: ${error}`);
+        }
+      }
+
+      if (updated) {
         updateUserProfile({
-          common_mistakes: [...profile.common_mistakes, 'present perfect'],
+          common_mistakes: newMistakes,
         });
       }
     }
