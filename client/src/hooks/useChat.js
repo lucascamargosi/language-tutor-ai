@@ -47,6 +47,10 @@ export function useChat() {
         body: JSON.stringify({ message: input }),
       });
 
+      if (!response.ok) {
+        throw new Error(`Erro do servidor: ${response.statusText}`);
+      }
+
       const reader = response.body.getReader();
       const decoder = new TextDecoder('utf-8');
 
@@ -75,6 +79,8 @@ export function useChat() {
       }
     } catch (error) {
       console.error('Erro ao enviar mensagem:', error);
+      // remove a última mensagem do usuário se houver erro
+      setMessages((prev) => prev.slice(0, -1));
     } finally {
       setLoading(false);
     }
