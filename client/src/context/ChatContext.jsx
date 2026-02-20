@@ -4,8 +4,12 @@ import { useChat } from '../hooks/useChat.js';
 
 const ChatContext = createContext();
 
-export function ChatProvider({ children }) {
-  const chat = useChat();
+export function ChatProvider({
+  children,
+  conversationId,
+  onConversationUpdate,
+}) {
+  const chat = useChat(conversationId, onConversationUpdate);
 
   return <ChatContext.Provider value={chat}>{children}</ChatContext.Provider>;
 }
