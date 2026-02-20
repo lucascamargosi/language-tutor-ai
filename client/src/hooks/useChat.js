@@ -77,6 +77,10 @@ export function useChat() {
           return updated;
         });
       }
+
+      // atualiza o perfil após a resposta da IA chegar
+      // (detecta erros comuns que foram adicionados ao perfil)
+      await fetchProfile();
     } catch (error) {
       console.error('Erro ao enviar mensagem:', error);
       // remove a última mensagem do usuário se houver erro
