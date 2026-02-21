@@ -15,6 +15,8 @@ Um tutor de idiomas inteligente que utiliza IA local para processar diálogos em
 - **Markdown Completo:** Renderização de Markdown com GFM, code highlighting e suporte a quebras de linha.
 - **Auto-Focus UX:** Campo de input auto-focado ao criar/mudar de conversa.
 - **Acessibilidade:** Atributos semânticos de form (id, name) para melhor acessibilidade.
+  
+<img width="1920" height="959" alt="Captura de tela de 2026-02-21 11-22-21" src="https://github.com/user-attachments/assets/7bc5d9cf-0574-4bc8-b287-5ce1bbb14b8e" />
 
 ## Tecnologias
 
