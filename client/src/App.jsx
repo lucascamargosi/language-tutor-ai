@@ -68,7 +68,9 @@ function App() {
 
         {/* Main Chat Area */}
         <div className="flex-1 flex flex-col min-w-0">
-          <ChatHeader onToggleSidebar={() => setIsSidebarOpen((open) => !open)} />
+          <ChatHeader
+            onToggleSidebar={() => setIsSidebarOpen((open) => !open)}
+          />
 
           <main className="flex-1 overflow-hidden flex flex-col relative min-w-0">
             {activeConversationId && (
@@ -78,7 +80,7 @@ function App() {
 
           <footer className="bg-white border-t border-slate-200 p-4 shrink-0">
             <div className="max-w-4xl mx-auto">
-              {activeConversationId && <InputArea />}
+              {activeConversationId && <InputArea key={activeConversationId} />}
             </div>
           </footer>
         </div>

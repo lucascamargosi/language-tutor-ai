@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useChatContext } from '../../context/ChatContext';
 
 export function InputArea() {
   const [input, setInput] = useState('');
   const { sendMessage, loading } = useChatContext();
+  const textareaRef = useRef(null);
 
   const handleSend = () => {
     sendMessage(input);
@@ -17,9 +18,17 @@ export function InputArea() {
     }
   };
 
+  // Auto-focus no input quando uma conversa é selecionada
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.focus();
+    }
+  }, []); // executa ao montar (componente é remontado quando conversa muda)
+
   return (
     <div className="flex items-end gap-3">
       <textarea
+        ref={textareaRef}
         id="chat-message"
         name="chat-message"
         rows={1}
