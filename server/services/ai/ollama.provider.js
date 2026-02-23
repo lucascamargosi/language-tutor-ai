@@ -4,6 +4,12 @@ dotenv.config();
 
 const OLLAMA_HOST = process.env.OLLAMA_HOST || 'http://127.0.0.1:11434';
 const OLLAMA_TIMEOUT = 30000; // 30 segundos
+const OLLAMA_TEMPERATURE = Number(process.env.OLLAMA_TEMPERATURE || '0.2');
+const OLLAMA_TOP_P = Number(process.env.OLLAMA_TOP_P || '0.9');
+const OLLAMA_REPEAT_PENALTY = Number(
+  process.env.OLLAMA_REPEAT_PENALTY || '1.1',
+);
+const OLLAMA_NUM_PREDICT = Number(process.env.OLLAMA_NUM_PREDICT || '220');
 
 export async function streamResponse({ model, messages, onToken }) {
   try {
@@ -22,6 +28,12 @@ export async function streamResponse({ model, messages, onToken }) {
         model,
         messages,
         stream: true,
+        options: {
+          temperature: OLLAMA_TEMPERATURE,
+          top_p: OLLAMA_TOP_P,
+          repeat_penalty: OLLAMA_REPEAT_PENALTY,
+          num_predict: OLLAMA_NUM_PREDICT,
+        },
       },
       {
         responseType: 'stream',
