@@ -38,15 +38,15 @@ export async function chatController(req, res) {
 
     // configuração de streaming
     res.setHeader('Content-Type', 'text/plain; charset=utf-8');
-    res.setHeader('Transfer-Encoding', 'chunked');
+    res.setHeader('Transfer-Encoding', 'chunked'); // instrui o HTTP a enviar a resposta em pedaços
 
     let fullAiResponse = '';
     await streamResponse({
       model: process.env.DEFAULT_MODEL,
       messages: contextMessages,
       onToken: (token) => {
-        fullAiResponse += token;
-        res.write(token);
+        fullAiResponse += token; // acumula tudo em memória para salvar no banco depois
+        res.write(token); // manda cada pedaço da mensagem conforme chega a IA, sem esperar terminar
       },
     });
 
@@ -60,7 +60,7 @@ export async function chatController(req, res) {
       const currentMistakes = profile.common_mistakes || [];
 
       // adiciona novos erros ao perfil (evita duplicação)
-      const newMistakes = currentMistakes;
+      const newMistakes = [...currentMistakes];
       let updated = false;
 
       for (const error of detectedErrors) {
