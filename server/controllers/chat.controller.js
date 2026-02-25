@@ -22,6 +22,10 @@ export async function chatController(req, res) {
       return res.status(400).json({ error: 'Message is required' });
     }
 
+    if (!conversationId) {
+      return res.status(400).json({ error: 'conversationId is required' })
+    }
+    
     // persistencia imediata (User)
     saveMessage('user', message, conversationId);
 
