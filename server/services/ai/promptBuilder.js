@@ -41,8 +41,8 @@ export function buildMessages({ history = [], userMessage }) {
   };
 
   return [
-    systemPrompt,
-    ...history,
+    systemPrompt,    // [0] - instruções para a IA
+    ...history,     // [1..n] - histórico da conversa
     {
       role: 'user',
       content: userMessage,

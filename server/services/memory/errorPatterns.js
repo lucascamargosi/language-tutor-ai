@@ -82,6 +82,7 @@ export function detectErrorPatterns(message) {
       }
     }
 
+    // garante que o mesmo erro não seja adicionado duas vezes no array de resultados
     if (found && !detected.includes(errorPattern.name)) {
       detected.push(errorPattern.name);
     }

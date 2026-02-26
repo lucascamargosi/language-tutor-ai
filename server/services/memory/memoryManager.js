@@ -37,12 +37,12 @@ function ensureProfileExists() {
  */
 export function getUserProfile() {
   try {
-    ensureProfileExists();
+    ensureProfileExists();  // garante que existe 
 
     const stmt = db.prepare('SELECT * FROM user_profile WHERE id = 1');
     const row = stmt.get();
 
-    if (!row) {
+    if (!row) { // fallback se vier null 
       return {
         level: 'A1',
         goal: 'Learn English',
@@ -61,7 +61,7 @@ export function getUserProfile() {
     };
   } catch (error) {
     console.error('Erro ao ler perfil do SQLite:', error);
-    return {
+    return { // fallback se der erro
       level: 'A1',
       goal: 'Learn English',
       preferred_language: 'english',

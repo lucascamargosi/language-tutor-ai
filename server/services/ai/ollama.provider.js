@@ -21,13 +21,14 @@ export async function streamResponse({ model, messages, onToken }) {
     );
   }
 
+  
   try {
     const response = await axios.post(
       `${OLLAMA_HOST}/api/chat`,
       {
         model,
         messages,
-        stream: true,
+        stream: true, // instrui ollma a enviar respostas em pedaços
         options: {
           temperature: OLLAMA_TEMPERATURE,
           top_p: OLLAMA_TOP_P,
