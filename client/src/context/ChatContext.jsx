@@ -11,7 +11,11 @@ export function ChatProvider({
 }) {
   const chat = useChat(conversationId, onConversationUpdate);
 
-  return <ChatContext.Provider value={chat}>{children}</ChatContext.Provider>;
+  return (
+    <ChatContext.Provider value={{ ...chat, conversationId }}>
+      {children}
+    </ChatContext.Provider>
+  );
 }
 
 export function useChatContext() {

@@ -1,12 +1,31 @@
 import { useChatContext } from '../../context/ChatContext';
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { Message } from './Message';
 
+const EMPTY_MESSAGES = [
+  'Welcome! Shall we practice or translate something',
+  'Ready to practice? Vamos treinar sua fluidez hoje.',
+  'Como posso ajudar com seus estudos hoje?',
+];
+
+const PAGE_SEED = Math.floor(Math.random() * EMPTY_MESSAGES.length);
+
+function getStringHash(value) {
+  return String(value)
+    .split('')
+    .reduce((total, char) => total + char.charCodeAt(0), 0);
+}
+
 export function Conversation() {
-  const { messages } = useChatContext();
+  const { messages, conversationId } = useChatContext();
   const bottomRef = useRef(null);
   const visibleMessages = messages.filter((msg) => msg.role !== 'system');
   const hasMessages = visibleMessages.length > 0;
+  const emptyStateMessage = useMemo(() => {
+    const hash = getStringHash(conversationId || 'default');
+    const messageIndex = (hash + PAGE_SEED) % EMPTY_MESSAGES.length;
+    return EMPTY_MESSAGES[messageIndex];
+  }, [conversationId]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -25,8 +44,7 @@ export function Conversation() {
         <div className="h-full w-full flex items-center justify-center">
           <div className="max-w-2xl text-center px-4">
             <p className="text-slate-700 text-lg md:text-3xl font-medium leading-relaxed">
-              Welcome! Shall we practice in English or do you need help with a
-              translation?
+              {emptyStateMessage}
             </p>
           </div>
         </div>
